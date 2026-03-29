@@ -14,23 +14,24 @@
 	  }
 	});
 	
-	$('.filters ul li').click(function(){
-        $('.filters ul li').removeClass('active');
-        $(this).addClass('active');
-          
-          var data = $(this).attr('data-filter');
-          $grid.isotope({
-            filter: data
-          })
-        });
-
-        var $grid = $(".grid").isotope({
-          itemSelector: ".all",
-          percentPosition: true,
-          masonry: {
-            columnWidth: ".all"
-          }
-        })
+	var $grid;
+	if ($(".grid").length) {
+		$('.filters ul li').click(function(){
+			$('.filters ul li').removeClass('active');
+			$(this).addClass('active');
+			var data = $(this).attr('data-filter');
+			$grid.isotope({
+				filter: data
+			});
+		});
+		$grid = $(".grid").isotope({
+			itemSelector: ".all",
+			percentPosition: true,
+			masonry: {
+				columnWidth: ".all"
+			}
+		});
+	}
 
 
 	const Accordion = {
@@ -109,21 +110,63 @@
 	})();
 
 
-	$(document).on("click", ".naccs .menu div", function() {
-		var numberIndex = $(this).index();
-	
-		if (!$(this).is("active")) {
-			$(".naccs .menu div").removeClass("active");
-			$(".naccs ul li").removeClass("active");
-	
-			$(this).addClass("active");
-			$(".naccs ul").find("li:eq(" + numberIndex + ")").addClass("active");
-	
-			var listItemHeight = $(".naccs ul")
-				.find("li:eq(" + numberIndex + ")")
-				.innerHeight();
-			$(".naccs ul").height(listItemHeight + "px");
+	function syncNaccListHeight($naccs) {
+		var $list = $naccs.find("ul.nacc").first();
+		var $active = $naccs.find("ul.nacc li.active");
+		var isStem = $naccs.closest(".stem-focus").length > 0;
+		if (!$active.length) {
+			return;
 		}
+		$list.height("auto");
+		var contentH = $active.outerHeight();
+		if (isStem) {
+			var $menu = $naccs.find(".stem-topic-menu, .menu").first();
+			var menuH = $menu.outerHeight();
+			/* Match the four topic buttons exactly — image/text fit inside (scroll if needed) */
+			$list.height(menuH);
+		} else {
+			$list.height(contentH);
+		}
+	}
+
+	$(document).on("click", ".naccs .menu div", function() {
+		var $tab = $(this);
+		if ($tab.hasClass("active")) {
+			return;
+		}
+		var $naccs = $tab.closest(".naccs");
+		if (!$naccs.length) {
+			return;
+		}
+		var numberIndex = $tab.index();
+		$naccs.find(".menu div").removeClass("active");
+		$naccs.find("ul.nacc li").removeClass("active");
+		$tab.addClass("active");
+		var $li = $naccs.find("ul.nacc li").eq(numberIndex);
+		$li.addClass("active");
+		syncNaccListHeight($naccs);
+	});
+
+	$(window).on("load", function () {
+		$(".naccs").each(function () {
+			syncNaccListHeight($(this));
+		});
+	});
+
+	$(function () {
+		$(".naccs").each(function () {
+			syncNaccListHeight($(this));
+		});
+	});
+
+	var stemResizeTimer;
+	$(window).on("resize", function () {
+		clearTimeout(stemResizeTimer);
+		stemResizeTimer = setTimeout(function () {
+			$(".naccs").each(function () {
+				syncNaccListHeight($(this));
+			});
+		}, 150);
 	});
 
 
@@ -184,7 +227,7 @@
 			target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
 			if (target.length) {
 				var width = $(window).width();
-				if(width < 991) {
+				if(width < 1200) {
 					$('.menu-trigger').removeClass('active');
 					$('.header-area .nav').slideUp(200);	
 				}				

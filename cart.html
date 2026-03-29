@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Cart — S.E.T. School</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/fontawesome.css">
+  <link rel="stylesheet" href="assets/css/templatemo-eduwell-style.css">
+  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+</head>
+<body>
+
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <a href="index.html" class="logo">
+              <img src="assets/images/set_school_logo.jpg" alt="S.E.T. School Logo">
+            </a>
+            <ul class="nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#about_us">About Us</a></li>
+              <li><a href="programs.html">Programs &amp; Register</a></li>
+              <li><a href="cart.html" class="nav-cart-link active">Cart <span class="cart-badge" style="display:none;">0</span></a></li>
+              <li><a href="index.html#testimonials">Testimonials</a></li>
+              <li><a href="index.html#contact-section">Contact Us</a></li>
+            </ul>
+            <a class="menu-trigger"><span>Menu</span></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="heading-page cart-page-heading" style="margin-top: 120px; padding: 28px 0 12px;">
+    <div class="container">
+      <div class="row align-items-lg-end g-2">
+        <div class="col-lg-auto">
+          <h1 class="cart-page-h1 mb-0">Registration cart</h1>
+        </div>
+        <div class="col-lg">
+          <p class="cart-page-lead mb-0 mt-2 mt-lg-0 text-lg-end">Review your selections. Pricing does not include the 10% sibling discount — we will apply that when we confirm your registration.</p>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12">
+          <div id="payment-success" class="alert alert-success mb-0 mt-2" style="display:none;" role="status">
+            Thank you — your payment was submitted. We will follow up to confirm enrollment details.
+          </div>
+          <div id="payment-canceled" class="alert alert-secondary mb-0 mt-2" style="display:none;" role="status">
+            Checkout was canceled. Your cart is unchanged.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cart-page-body" style="margin-top: 24px; padding-bottom: 80px;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div id="cart-empty" style="display:none; padding: 40px; text-align: center; background: #f5f5f5; border-radius: 12px;">
+            <p class="mb-3">Your cart is empty.</p>
+            <div class="main-button-gradient"><a href="programs.html">Browse vacation camps</a></div>
+          </div>
+          <div id="cart-filled" style="display:none;">
+            <table class="cart-page-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Code</th>
+                  <th style="text-align:right;">Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="cart-rows"></tbody>
+            </table>
+            <div class="cart-page-summary">
+              <div class="cart-summary-top-row">
+                <div class="cart-subtotal-group mb-0">
+                  <span class="cart-subtotal-inline-label"><strong>Subtotal:</strong></span>
+                  <span id="cart-subtotal" class="cart-subtotal-amount">$0</span>
+                  <button type="button" id="copy-cart-subtotal" class="btn btn-sm btn-outline-secondary cart-copy-subtotal-btn" title="Copy subtotal" aria-label="Copy cart subtotal">
+                    <i class="fa fa-files-o" aria-hidden="true"></i> Copy
+                  </button>
+                </div>
+                <p class="mb-0 cart-extended-note">Extended day (8:15 AM and 4:15–6:00 PM) and the invite-a-friend bonus can be arranged when you complete registration.</p>
+              </div>
+              <div id="stripe-reference-preview" class="cart-ref-strip" style="display:none;">
+                <span class="cart-ref-label"><strong>Stripe reference</strong> — paste this at checkout and on your receipt:</span>
+                <code id="stripe-reference-text" class="cart-ref-code"></code>
+                <button type="button" id="copy-stripe-ref" class="btn btn-sm btn-outline-primary cart-copy-ref-btn" title="Copy reference" aria-label="Copy Stripe reference to clipboard">
+                  <i class="fa fa-files-o" aria-hidden="true"></i> Copy
+                </button>
+              </div>
+              <p class="cart-pay-line mb-0"><strong>Pay online</strong> with Stripe below. If checkout shows a <strong>Course Code</strong> field, paste the reference there. You can also <a href="index.html#contact-section">contact us</a> to register.</p>
+              <p id="cart-pay-amount-note" class="cart-pay-line cart-pay-amount-note mb-0 mt-2">Please enter the <strong>same total</strong> as your cart subtotal below when Stripe asks for the payment amount.</p>
+              <p id="stripe-checkout-mode-hint" class="small text-muted mb-2 mt-2" style="display:none;">The Stripe total matches your cart subtotal and updates when you add or remove items.</p>
+              <div class="cart-actions-row cart-actions-row--checkout d-flex flex-wrap align-items-center">
+                <button type="button" id="stripe-pay-cart" class="btn btn-dark cart-stripe-pay-btn" style="display:none;font-weight:600;">
+                  Pay with Stripe
+                </button>
+                <div id="stripe-buy-button-mount" class="stripe-buy-button-mount"></div>
+              </div>
+              <div class="cart-actions-row cart-actions-row--secondary d-flex flex-wrap justify-content-end align-items-center">
+                <div class="main-button-gradient mb-0"><a href="index.html#contact-section">Go to contact form</a></div>
+                <button type="button" id="cart-clear" class="btn btn-outline-secondary">Clear cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api-config.js"></script>
+  <script src="assets/js/auth-session.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/stripe-payment-link-config.js"></script>
+  <script src="assets/js/stripe-buy-button.js"></script>
+  <script src="assets/js/stripe-cart-checkout.js"></script>
+  <script src="assets/js/custom.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('session_id')) {
+        if (window.SETSchoolCart) {
+          window.SETSchoolCart.clearCart();
+        }
+        var ok = document.getElementById('payment-success');
+        if (ok) {
+          ok.style.display = 'block';
+        }
+        window.history.replaceState({}, document.title, 'cart.html');
+      } else if (params.get('canceled') === '1') {
+        var c = document.getElementById('payment-canceled');
+        if (c) {
+          c.style.display = 'block';
+        }
+        window.history.replaceState({}, document.title, 'cart.html');
+      }
+    })();
+
+    function renderCartPage() {
+      var cart = window.SETSchoolCart.getCart();
+      var emptyEl = document.getElementById('cart-empty');
+      var filledEl = document.getElementById('cart-filled');
+      var tbody = document.getElementById('cart-rows');
+      var subEl = document.getElementById('cart-subtotal');
+      if (!cart.length) {
+        emptyEl.style.display = 'block';
+        filledEl.style.display = 'none';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      filledEl.style.display = 'block';
+      tbody.innerHTML = '';
+      cart.forEach(function (row) {
+        var tr = document.createElement('tr');
+        var code = (row.code || '').trim();
+        var codeCell =
+          '<td class="cart-code-td">' +
+          (code
+            ? '<span class="cart-code-text">' +
+              escapeHtml(code) +
+              '</span> <button type="button" class="btn btn-sm btn-light border cart-code-copy" data-code="' +
+              escapeHtml(code) +
+              '" title="Copy code" aria-label="Copy course code ' +
+              escapeHtml(code) +
+              '"><i class="fa fa-files-o" aria-hidden="true"></i></button>'
+            : '—') +
+          '</td>';
+        tr.innerHTML =
+          '<td>' + escapeHtml(row.name) + '</td>' +
+          codeCell +
+          '<td style="text-align:right;">$' + Number(row.price).toFixed(0) + '</td>' +
+          '<td><button type="button" class="btn btn-sm btn-outline-danger btn-remove" data-id="' + escapeHtml(row.id) + '">Remove</button></td>';
+        tbody.appendChild(tr);
+      });
+      subEl.textContent = '$' + window.SETSchoolCart.cartSubtotal().toFixed(0);
+
+      var refBox = document.getElementById('stripe-reference-preview');
+      var refText = document.getElementById('stripe-reference-text');
+      if (refBox && refText && window.SETSchoolStripeCheckout) {
+        var ref = window.SETSchoolStripeCheckout.buildClientReferenceId(cart);
+        if (ref) {
+          refText.textContent = ref;
+          refBox.style.display = 'block';
+        } else {
+          refBox.style.display = 'none';
+        }
+      }
+    }
+    function escapeHtml(s) {
+      if (!s) return '';
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+    document.addEventListener('DOMContentLoaded', renderCartPage);
+    document.addEventListener('setschool-cart-updated', renderCartPage);
+    document.getElementById('cart-rows').addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.closest && t.closest('.btn-remove')) {
+        var rm = t.closest('.btn-remove');
+        window.SETSchoolCart.removeItem(rm.getAttribute('data-id'));
+        return;
+      }
+      if (t && t.closest && t.closest('.cart-code-copy')) {
+        var copyBtn = t.closest('.cart-code-copy');
+        var code = copyBtn.getAttribute('data-code');
+        if (!code) return;
+        copyTextToClipboard(code, function () {
+          var orig = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
+          copyBtn.disabled = true;
+          setTimeout(function () {
+            copyBtn.innerHTML = orig;
+            copyBtn.disabled = false;
+          }, 1200);
+        });
+      }
+    });
+    document.getElementById('cart-clear').addEventListener('click', function () {
+      if (confirm('Remove all items from your cart?')) {
+        window.SETSchoolCart.clearCart();
+      }
+    });
+
+    function copyTextToClipboard(text, onDone) {
+      if (!text) return;
+      function done() {
+        if (typeof onDone === 'function') onDone();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          fallbackCopy(text);
+          done();
+        });
+      } else {
+        fallbackCopy(text);
+        done();
+      }
+    }
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+      } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    document.getElementById('copy-stripe-ref').addEventListener('click', function () {
+      var el = document.getElementById('stripe-reference-text');
+      var btn = document.getElementById('copy-stripe-ref');
+      if (!el || !btn) return;
+      var text = el.textContent || '';
+      copyTextToClipboard(text, function () {
+        var orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i> Copied';
+        btn.disabled = true;
+        setTimeout(function () {
+          btn.innerHTML = orig;
+          btn.disabled = false;
+        }, 1600);
+      });
+    });
+
+    document.getElementById('copy-cart-subtotal').addEventListener('click', function () {
+      var sub = document.getElementById('cart-subtotal');
+      var btn = document.getElementById('copy-cart-subtotal');
+      if (!sub || !btn) return;
+      var text = (sub.textContent || '').trim();
+      if (!text) return;
+      copyTextToClipboard(text, function () {
+        var orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i> Copied';
+        btn.disabled = true;
+        setTimeout(function () {
+          btn.innerHTML = orig;
+          btn.disabled = false;
+        }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>

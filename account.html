@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Account — S.E.T. School</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/fontawesome.css">
+  <link rel="stylesheet" href="assets/css/templatemo-eduwell-style.css">
+</head>
+<body>
+
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <a href="index.html" class="logo">
+              <img src="assets/images/set_school_logo.jpg" alt="S.E.T. School Logo">
+            </a>
+            <ul class="nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#about_us">About Us</a></li>
+              <li><a href="programs.html">Programs &amp; Register</a></li>
+              <li><a href="account.html" class="active">Account</a></li>
+              <li><a href="cart.html" class="nav-cart-link">Cart <span class="cart-badge" style="display:none;">0</span></a></li>
+              <li><a href="index.html#testimonials">Testimonials</a></li>
+              <li><a href="index.html#contact-section">Contact Us</a></li>
+            </ul>
+            <a class="menu-trigger"><span>Menu</span></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section style="margin-top: 120px; padding-bottom: 80px;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <h1 style="font-weight:800;">Account</h1>
+          <p class="mt-2">Create an account, verify your email from the link we send, then sign in to pay camp fees with Stripe.</p>
+
+          <div id="panel-logged-out">
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <h2 style="font-size:22px;font-weight:800;">Register</h2>
+                <form id="register-form" class="mt-3">
+                  <div class="mb-2">
+                    <label class="form-label" for="reg-name">Name</label>
+                    <input class="form-control" type="text" id="reg-name" name="name" required autocomplete="name">
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label" for="reg-email">Email</label>
+                    <input class="form-control" type="email" id="reg-email" name="email" required autocomplete="email">
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label" for="reg-password">Password</label>
+                    <input class="form-control" type="password" id="reg-password" name="password" required autocomplete="new-password" minlength="8">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="reg-password-2">Confirm password</label>
+                    <input class="form-control" type="password" id="reg-password-2" name="password_confirmation" required autocomplete="new-password" minlength="8">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+              </div>
+              <div class="col-md-6 mt-4 mt-md-0">
+                <h2 style="font-size:22px;font-weight:800;">Sign in</h2>
+                <form id="login-form" class="mt-3">
+                  <div class="mb-2">
+                    <label class="form-label" for="login-email">Email</label>
+                    <input class="form-control" type="email" id="login-email" name="email" required autocomplete="email">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input class="form-control" type="password" id="login-password" name="password" required autocomplete="current-password">
+                  </div>
+                  <button type="submit" class="btn btn-dark">Sign in</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-logged-in" style="display:none;" class="mt-4">
+            <div class="alert alert-info" id="auth-banner" style="display:none;"></div>
+            <p><strong>Signed in as:</strong> <span id="user-email"></span></p>
+            <p id="verify-warning" style="display:none;" class="text-danger">Your email is not verified yet. Check your inbox or resend the verification link.</p>
+            <div class="mt-3 d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-outline-primary" id="resend-verification" style="display:none;">Resend verification email</button>
+              <button type="button" class="btn btn-outline-secondary" id="logout-btn">Sign out</button>
+              <a class="btn btn-primary" href="cart.html">Go to cart</a>
+            </div>
+          </div>
+
+          <div id="form-messages" class="mt-4"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api-config.js"></script>
+  <script src="assets/js/auth-session.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/custom.js"></script>
+  <script>
+    function apiBaseOk() {
+      return window.SETSchoolApi && window.SETSchoolApi.baseUrl && window.SETSchoolApi.baseUrl.indexOf('your-laravel') === -1;
+    }
+
+    function showMsg(html, isError) {
+      var el = document.getElementById('form-messages');
+      el.className = 'mt-4 alert ' + (isError ? 'alert-danger' : 'alert-success');
+      el.innerHTML = html;
+    }
+
+    function showPanel(user) {
+      var loggedIn = !!user;
+      document.getElementById('panel-logged-out').style.display = loggedIn ? 'none' : 'block';
+      document.getElementById('panel-logged-in').style.display = loggedIn ? 'block' : 'none';
+      if (!loggedIn) {
+        return;
+      }
+      document.getElementById('user-email').textContent = user.email || '';
+      var needsVerify = !user.email_verified_at;
+      document.getElementById('verify-warning').style.display = needsVerify ? 'block' : 'none';
+      document.getElementById('resend-verification').style.display = needsVerify ? 'inline-block' : 'none';
+    }
+
+    async function refreshUser() {
+      if (!apiBaseOk() || !window.SETSchoolAuth.getToken()) {
+        showPanel(null);
+        return;
+      }
+      try {
+        var res = await fetch(window.SETSchoolApi.url('api/user'), {
+          headers: window.SETSchoolAuth.getAuthHeaders(),
+        });
+        if (!res.ok) {
+          window.SETSchoolAuth.clear();
+          showPanel(null);
+          return;
+        }
+        var user = await res.json();
+        showPanel(user);
+      } catch (e) {
+        showPanel(null);
+      }
+    }
+
+    document.getElementById('register-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!apiBaseOk()) {
+        showMsg('Set assets/js/api-config.js to your Laravel base URL.', true);
+        return;
+      }
+      var body = {
+        name: document.getElementById('reg-name').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        password_confirmation: document.getElementById('reg-password-2').value,
+      };
+      try {
+        var res = await fetch(window.SETSchoolApi.url('api/register'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(body),
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          throw new Error(data.message || JSON.stringify(data.errors || data));
+        }
+        showMsg(data.message || 'Registered — check your email to verify.', false);
+        e.target.reset();
+      } catch (err) {
+        showMsg(err.message, true);
+      }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!apiBaseOk()) {
+        showMsg('Set assets/js/api-config.js to your Laravel base URL.', true);
+        return;
+      }
+      var body = {
+        email: document.getElementById('login-email').value,
+        password: document.getElementById('login-password').value,
+      };
+      try {
+        var res = await fetch(window.SETSchoolApi.url('api/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(body),
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          throw new Error(data.message || (data.errors && data.errors.email && data.errors.email[0]) || 'Login failed');
+        }
+        window.SETSchoolAuth.setToken(data.token);
+        showMsg('Signed in.', false);
+        showPanel(data.user);
+      } catch (err) {
+        showMsg(err.message, true);
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      var t = window.SETSchoolAuth.getToken();
+      if (t) {
+        fetch(window.SETSchoolApi.url('api/logout'), {
+          method: 'POST',
+          headers: Object.assign({}, window.SETSchoolAuth.getAuthHeaders(), { 'Content-Type': 'application/json' }),
+          body: '{}',
+        }).finally(function () {
+          window.SETSchoolAuth.clear();
+          showPanel(null);
+          showMsg('Signed out.', false);
+        });
+      } else {
+        window.SETSchoolAuth.clear();
+        showPanel(null);
+      }
+    });
+
+    document.getElementById('resend-verification').addEventListener('click', async function () {
+      try {
+        var res = await fetch(window.SETSchoolApi.url('api/email/verification-notification'), {
+          method: 'POST',
+          headers: Object.assign({}, window.SETSchoolAuth.getAuthHeaders(), { 'Content-Type': 'application/json' }),
+          body: '{}',
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          throw new Error(data.message || 'Could not resend');
+        }
+        showMsg(data.message, false);
+      } catch (err) {
+        showMsg(err.message, true);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', refreshUser);
+    document.addEventListener('setschool-auth-changed', refreshUser);
+  </script>
+</body>
+</html>

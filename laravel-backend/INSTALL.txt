@@ -1,0 +1,51 @@
+SET School — Laravel API setup (copy into your Laravel project)
+================================================================
+
+1) Composer packages
+   composer require stripe/stripe-php laravel/sanctum
+   php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+   php artisan migrate
+
+2) Copy files from this folder into the same paths in your Laravel app:
+   - app/Http/Controllers/...
+   - app/Models/ContactMessage.php (and merge User model changes)
+   - config/setschool.php
+   - database/migrations/..._create_contact_messages_table.php
+
+3) Merge config/services.php — add the 'stripe' array from config/services_stripe_fragment.txt.
+   Register config/setschool.php is loaded automatically if present in config/.
+
+4) Merge routes: copy Route:: entries from laravel-backend/routes/api.php into your
+   routes/api.php. Add ONLY the email verification route from routes/web.php into your
+   routes/web.php (do not delete your other web routes).
+
+5) .env additions:
+   APP_URL=https://your-laravel-domain.com
+   FRONTEND_URL=https://your-static-site.com
+   STRIPE_KEY=pk_live_or_test   (publishable — optional, for server-side if you use it)
+   STRIPE_SECRET=sk_...
+   STRIPE_WEBHOOK_SECRET=whsec_...
+
+6) CORS: ensure config/cors.php allows your static site's origin (FRONTEND_URL), e.g.
+   http://127.0.0.1:5500 for Live Server. Run: php artisan config:clear
+
+7) Mail: configure MAIL_* so verification emails send (MAIL_MAILER, etc.).
+
+8) Stripe Dashboard: webhook endpoint POST https://your-laravel-domain.com/api/webhooks/stripe
+   Events: checkout.session.completed
+
+9) Frontend: set window.SETSchoolApi in assets/js/api-config.js to your APP_URL + /api paths.
+
+10) Cart checkout (dynamic total matching localStorage cart): POST /api/checkout/cart-session
+    (no login). Copy CartCheckoutSessionController and its Route from this repo’s routes/api.php.
+    In assets/js/stripe-payment-link-config.js set SETSchoolStripeCartCheckout.useDynamicCheckout
+    to true. The cart page will show “Pay $X with Stripe” and open Checkout with line items = cart rows.
+
+================================================================
+Notes
+================================================================
+- Contact form POSTs to /api/contact (no login).
+- Stripe Checkout POST /api/checkout/session requires Authorization: Bearer {sanctum token}
+  and a verified email (MustVerifyEmail).
+- POST /api/checkout/cart-session is public (guest cart); amounts come from request JSON.
+- Users verify by clicking the link in email; Laravel redirects to FRONTEND_URL/email-verified.html
