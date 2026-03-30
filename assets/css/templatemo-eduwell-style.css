@@ -754,11 +754,37 @@ section.main-banner {
   margin-left: 20px;
   position: relative;
   z-index: 2;
+  min-height: 200px;
 }
 
 .main-banner .right-image img {
   position: relative;
   z-index: 2;
+}
+
+.main-banner .right-image img.main-banner-hero-photo {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 520px;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: 18px;
+  box-shadow:
+    0 16px 48px rgba(25, 134, 198, 0.18),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(251, 184, 0, 0.35);
+}
+
+section.simple-cta .left-image img.simple-cta-offer-photo {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  border: 3px solid rgba(251, 184, 0, 0.45);
 }
 
 .main-banner .right-image::after {
@@ -1045,6 +1071,8 @@ section.simple-cta {
 }
 
 section.simple-cta .left-image {
+  position: relative;
+  z-index: 2;
   margin-right: 45px;
 }
 
@@ -1138,6 +1166,17 @@ section.testimonials:after {
   position: absolute;
   right: 30px;
   bottom: 30px
+}
+
+.testimonials .item .testimonials-quote-icon {
+  position: absolute;
+  right: 28px;
+  bottom: 26px;
+  font-size: 42px;
+  line-height: 1;
+  color: rgba(251, 184, 0, 0.35);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .testimonials .owl-dots {
