@@ -128,7 +128,10 @@
             'aria-label',
             'Remove ' + item.code + ' from cart'
           );
-          removeBtn.innerHTML = '\u00D7';
+          removeBtn.innerHTML =
+            '<span class="btn-add-cart-remove-inner" aria-hidden="true">' +
+            '<i class="fa fa-times"></i>' +
+            '</span>';
           wrap.appendChild(removeBtn);
         }
       } else {

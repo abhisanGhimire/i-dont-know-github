@@ -1,14 +1,14 @@
 /**
- * Contact form — static site (HTML/CSS/JS only).
+ * Contact form, static site (HTML/CSS/JS only).
  * Uses FormSubmit.co to deliver messages to your inbox (no backend on your server).
  *
- * First time: confirm the email address when FormSubmit sends a verification link to abeesun@gmail.com.
+ * First time: confirm the email when FormSubmit sends a verification link to that inbox.
  * Docs: https://formsubmit.co/
  */
 (function () {
   'use strict';
 
-  var CONTACT_EMAIL = 'abeesun@gmail.com';
+  var CONTACT_EMAIL = 'setschoolmw@gmail.com';
   var FORMSUBMIT_AJAX = 'https://formsubmit.co/ajax/' + encodeURIComponent(CONTACT_EMAIL);
 
   var THANK_YOU =
@@ -54,7 +54,7 @@
         name: (nameEl && nameEl.value.trim()) || '',
         email: (emailEl && emailEl.value.trim()) || '',
         message: (messageEl && messageEl.value.trim()) || '',
-        _subject: 'SET School website — contact form',
+        _subject: 'SET School website: contact form',
       };
 
       if (!payload.message) {
@@ -81,7 +81,7 @@
         });
 
         if (!res.ok) {
-          throw new Error(data.message || 'Could not send — try again later.');
+          throw new Error(data.message || 'Could not send. Try again later.');
         }
 
         showStatus(statusEl, 'ok', THANK_YOU);

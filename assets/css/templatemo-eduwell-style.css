@@ -2868,41 +2868,60 @@ section.our-courses.stem-focus .stem-focus-lead--hint {
   letter-spacing: 0.02em;
 }
 
-.program-card .camp-actions .btn-add-cart-wrap {
+.program-card .btn-add-cart-wrap {
   position: relative;
   display: inline-block;
   vertical-align: middle;
 }
 
-.program-card .camp-actions .btn-add-cart-remove {
+.program-card .btn-add-cart-remove {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -4px;
+  right: -4px;
   z-index: 2;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   margin: 0;
   padding: 0;
   line-height: 1;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 9px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  color: #fff;
-  background: #2a2a2a;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  display: flex;
+  color: #555;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06), 0 2px 6px rgba(25, 134, 198, 0.2);
+  border: 1px solid rgba(25, 134, 198, 0.35);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  transform: translate(25%, -25%);
 }
 
-.program-card .camp-actions .btn-add-cart-remove:hover {
-  background: #c62828;
+.program-card .btn-add-cart-remove-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.program-card .btn-add-cart-remove-inner .fa {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.program-card .btn-add-cart-remove:hover {
+  background: #fff7f7;
+  border-color: rgba(198, 40, 40, 0.45);
+  color: #b71c1c;
   opacity: 1;
 }
 
-.program-card .camp-actions .btn-add-cart-remove:focus {
+.program-card .btn-add-cart-remove:hover .fa {
+  opacity: 1;
+}
+
+.program-card .btn-add-cart-remove:focus {
   outline: 2px solid #fbb800;
   outline-offset: 2px;
 }

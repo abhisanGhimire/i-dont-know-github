@@ -122,7 +122,7 @@
 		if (isStem) {
 			var $menu = $naccs.find(".stem-topic-menu, .menu").first();
 			var menuH = $menu.outerHeight();
-			/* Match the four topic buttons exactly — image/text fit inside (scroll if needed) */
+			/* Match the four topic buttons exactly; image/text fit inside (scroll if needed) */
 			$list.height(menuH);
 		} else {
 			$list.height(contentH);

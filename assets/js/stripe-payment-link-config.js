@@ -8,13 +8,13 @@
  * **Course Code field on checkout:** In Stripe Dashboard open your Payment Link
  * → Customize checkout → Custom fields → add a text field with the label
  * exactly **Course Code**. Ask families to paste the same codes shown in the
- * cart (the Buy Button cannot prefill arbitrary custom fields today — the
+ * cart (the Buy Button cannot prefill arbitrary custom fields today; the
  * client reference is still saved on the payment automatically).
  *
  * **Cart total in Stripe:** The embedded Buy Button uses a fixed Payment Link
  * amount. To charge the real cart subtotal (updates when items change), deploy
  * Laravel and set `SETSchoolStripeCartCheckout.useDynamicCheckout` and
- * `SETSchoolApi.baseUrl` in api-config.js — checkout uses POST /api/checkout/cart-session.
+ * `SETSchoolApi.baseUrl` in api-config.js: checkout uses POST /api/checkout/cart-session.
  */
 (function () {
   window.SETSchoolStripePaymentLink = {
