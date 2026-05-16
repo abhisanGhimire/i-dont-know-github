@@ -144,11 +144,14 @@ Program buttons embed JSON in **`data-item`** (for example cart codes like `APR2
 
 ## Configuration checklist (before going live)
 
-1. **`assets/js/contact-form.js`**  
-   Set **`CONTACT_EMAIL`** to the inbox that should receive contact form mail (and verify with FormSubmit).
+1. **`assets/js/form-backend-config.js`** (recommended for reliable mail)  
+   Sign up at [Web3Forms](https://web3forms.com) with your school inbox, paste the **Access Key** into **`web3formsAccessKey`**, and set **`useWeb3Forms: true`**. This bypasses FormSubmit activation and outages.
 
-2. **`assets/js/vacation-application.js`**  
-   Set **`SCHOOL_INBOX_EMAIL`** (and derived FormSubmit URLs) for applications and uploads.
+2. **`assets/js/contact-form.js`**  
+   Uses Web3Forms when configured; otherwise FormSubmit (must **activate** the inbox: submit once, then click the link FormSubmit emails to you).
+
+3. **`assets/js/vacation-application.js`**  
+   Same backend as above; **`SCHOOL_INBOX_EMAIL`** is used for display and FormSubmit fallback.
 
 3. **`assets/js/stripe-payment-link-config.js`**  
    Replace **test** Stripe keys / Payment Link URL / Buy Button ID with **live** values when you launch; ensure the Payment Link product and inventory settings match how you sell (avoid accidental “sold out” if quantity limits are enabled).

@@ -18,8 +18,38 @@
   var SCHOOL_INBOX_EMAIL = 'setschoolmw@gmail.com';
   var FORMSUBMIT_BASE = 'https://formsubmit.co/' + encodeURIComponent(SCHOOL_INBOX_EMAIL);
   var FORMSUBMIT_AJAX = 'https://formsubmit.co/ajax/' + encodeURIComponent(SCHOOL_INBOX_EMAIL);
+  var WEB3FORMS_URL = 'https://api.web3forms.com/submit';
 
   var flashTimer;
+
+  function useWeb3Forms() {
+    var cfg = window.SETSchoolFormBackend || {};
+    return (
+      cfg.useWeb3Forms === true &&
+      typeof cfg.web3formsAccessKey === 'string' &&
+      cfg.web3formsAccessKey.trim().length > 8
+    );
+  }
+
+  function web3formsSend(fields, file, fileName) {
+    var cfg = window.SETSchoolFormBackend || {};
+    var fd = new FormData();
+    fd.append('access_key', cfg.web3formsAccessKey.trim());
+    Object.keys(fields).forEach(function (key) {
+      fd.append(key, fields[key]);
+    });
+    if (file) {
+      fd.append('attachment', file, fileName || 'attachment.pdf');
+    }
+    return fetch(WEB3FORMS_URL, { method: 'POST', body: fd }).then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok || !data.success) {
+          throw new Error((data && data.message) || 'Could not send email.');
+        }
+        return data;
+      });
+    });
+  }
 
   function $(id) {
     return document.getElementById(id);
@@ -109,6 +139,19 @@
       throw new Error('Parent/guardian email is required.');
     }
 
+    if (useWeb3Forms()) {
+      return web3formsSend(
+        {
+          subject: 'SET School: Vacation application (PDF attached)',
+          email: replyEmail,
+          replyto: replyEmail,
+          message: window.SETSchoolVacationPdf.buildPlainTextSummary(data),
+        },
+        pdfBlob,
+        'vacation_application.pdf'
+      );
+    }
+
     var form = document.createElement('form');
     form.method = 'POST';
     form.action = FORMSUBMIT_BASE;
@@ -144,31 +187,58 @@
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
+    return Promise.resolve();
   }
 
   function submitEmailAjaxFallback(data) {
     var replyEmail = data.p1_email || data.p2_email || '';
+    var summary = window.SETSchoolVacationPdf.buildPlainTextSummary(data);
+
+    if (useWeb3Forms()) {
+      return web3formsSend({
+        subject: 'SET School: Vacation application (text copy)',
+        email: replyEmail,
+        replyto: replyEmail,
+        message: summary,
+      });
+    }
+
+    var fd = new FormData();
+    fd.append('_subject', 'SET School: Vacation application (text copy)');
+    fd.append('_replyto', replyEmail);
+    fd.append('_captcha', 'false');
+    fd.append('message', summary);
+
     return fetch(FORMSUBMIT_AJAX, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        _subject: 'SET School: Vacation application (text copy)',
-        _replyto: replyEmail,
-        _captcha: 'false',
-        message: window.SETSchoolVacationPdf.buildPlainTextSummary(data),
-      }),
+      headers: { Accept: 'application/json' },
+      body: fd,
     }).then(function (res) {
-      if (!res.ok) {
-        throw new Error('Email request failed');
-      }
-      return res.json();
+      return res.json().then(function (body) {
+        if (!res.ok) {
+          throw new Error((body && body.message) || 'Email request failed');
+        }
+        return body;
+      });
     });
   }
 
   function submitUploadedPdf(file, replyEmail) {
+    if (useWeb3Forms()) {
+      return web3formsSend(
+        {
+          subject: 'SET School: Vacation application (uploaded PDF)',
+          email: replyEmail,
+          replyto: replyEmail,
+          message:
+            'Completed vacation packet submitted via website upload. Contact email: ' +
+            replyEmail,
+        },
+        file,
+        file.name || 'vacation_upload.pdf'
+      );
+    }
+
     var form = document.createElement('form');
     form.method = 'POST';
     form.action = FORMSUBMIT_BASE;
@@ -205,6 +275,7 @@
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
+    return Promise.resolve();
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -268,18 +339,23 @@
           ubtn.textContent = 'Sending…';
         }
 
-        try {
-          submitUploadedPdf(file, email);
-          uploadForm.reset();
-          showSuccessFlash();
-        } catch (err) {
-          setError('Could not send upload. Try again or email the PDF to setschoolmw@gmail.com.');
-        }
-
-        if (ubtn) {
-          ubtn.disabled = false;
-          ubtn.textContent = 'Send PDF';
-        }
+        Promise.resolve(submitUploadedPdf(file, email))
+          .then(function () {
+            uploadForm.reset();
+            showSuccessFlash();
+          })
+          .catch(function () {
+            setError(
+              'Could not send upload. Try again or email the PDF to setschoolmw@gmail.com.'
+            );
+          })
+          .finally(function () {
+            if (ubtn) {
+              ubtn.disabled = false;
+              ubtn.textContent = 'Send PDF';
+            }
+          });
+        return;
       });
     }
 
@@ -336,22 +412,23 @@
         }
       }
 
-      try {
-        submitEmailWithAttachment(pdfBlob, data);
-        showSuccessFlash();
-        resetBtn();
-      } catch (err) {
-        submitEmailAjaxFallback(data)
-          .then(function () {
-            showSuccessFlash();
-          })
-          .catch(function () {
-            setError(
-              'We could not email automatically. Your PDF was downloaded. Send it to setschoolmw@gmail.com or bring it to school.'
-            );
-          })
-          .finally(resetBtn);
-      }
+      submitEmailWithAttachment(pdfBlob, data)
+        .then(function () {
+          showSuccessFlash();
+          resetBtn();
+        })
+        .catch(function () {
+          submitEmailAjaxFallback(data)
+            .then(function () {
+              showSuccessFlash();
+            })
+            .catch(function () {
+              setError(
+                'We could not email automatically. Your PDF was downloaded. Send it to setschoolmw@gmail.com or bring it to school. If you use FormSubmit for the first time, check that inbox (and spam) for an activation link.'
+              );
+            })
+            .finally(resetBtn);
+        });
     });
   });
 })();
